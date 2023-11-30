@@ -6,7 +6,7 @@ def RANSAC(src,dst,iter,threshold, eigenValues):
       best_homography = None
       inliers = [0]
       for t in range(iter):
-            sample_indices = np.random.choice(int(len(src)), size=8, replace=False)
+            sample_indices = np.random.choice(int(len(src)), size=4, replace=False)
             #int(len(src)*0.1)
             # Compute the Homography
             H = compute_homography(src[sample_indices],dst[sample_indices], eigenValues)
