@@ -2,14 +2,14 @@ import numpy as np
 from numpy.linalg import eig
 from src.homography import *
 
-def RANSAC(src,dst,iter,threshold, eigenValues):
+def RANSAC(src,dst,iter,threshold):
       best_homography = None
       inliers = [0]
       for t in range(iter):
             sample_indices = np.random.choice(int(len(src)), size=4, replace=False)
             #int(len(src)*0.1)
             # Compute the Homography
-            H = compute_homography(src[sample_indices],dst[sample_indices], eigenValues)
+            H = compute_homography(src[sample_indices],dst[sample_indices])
             inl = 0
             for p, q in zip(src, dst):
                 x1 = p[0]
