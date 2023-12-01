@@ -16,12 +16,8 @@ def compute_homography(src, dst):
 
         eigenvalue,eigenvector=eig(np.matmul(np.transpose(A),A)) 
         idx = eigenvalue.argsort() #sorts the eigenvalues in ascending order
-        # print("idx", idx)
-        # print("eigenValues", eigenValues)
         eigenValues = eigenvalue[idx] #eigenvalues in ascending order
         eigenVectors = eigenvector[:,idx] #eigenVectors in ascending order
-        # print("eigenVectors", eigenVectors)
-        # print("eigenValues", eigenValues[-1])
         #_, _, Vt = np.linalg.svd(A, full_matrices=True)
         #x = Vt[-1]
         x=eigenVectors[0]
