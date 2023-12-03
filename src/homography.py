@@ -67,13 +67,13 @@ def create_homography_openCV(match, kp_list):
     dst_pts = np.float32([ kp2[t[0].trainIdx].pt for t in match ]).reshape(-1,1,2)
 
     # Normalize points
-    src_pts, src_matrix = normalize_h(src_pts)
-    dst_pts, dst_matrix = normalize_h(dst_pts)
+    #src_pts, src_matrix = normalize_h(src_pts)
+    #dst_pts, dst_matrix = normalize_h(dst_pts)
     
     # Use OpenCV's findHomography to compute the homography matrix
     H, _ = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC)
     # Denormalize homography
-    H = denormalize_homography(H, src_matrix, dst_matrix)
+    #H = denormalize_homography(H, src_matrix, dst_matrix)
 
     print("Condition of H from cv2", np.linalg.cond(H))
     return src_pts, dst_pts, H

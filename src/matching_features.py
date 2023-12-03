@@ -2,31 +2,24 @@ import cv2
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 
-
-def matching_features(sift_points):
-    #Brute force method
-    bf = cv2.BFMatcher(crossCheck=True) #crossCheck is set to true so that the match is symmetric
+def matching_features(sift_points, img1, img2, sift):
+    # find the keypoints and descriptors with SIFT
+    kp1, des1 = sift.detectAndCompute(img1,None)
+    kp2, des2 = sift.detectAndCompute(img2,None)
+    # BFMatcher with default params
+    bf = cv2.BFMatcher() 
+    matches = bf.knnMatch(des1,des2,k=2)
+    # Apply ratio test
     all_matches = []
-    match = []
-    for s in range(len(sift_points)-1):
-        point_matches = []
-        des1 = (((sift_points[s])[2:,:])).astype('float32')  # descriptors of the first frame
-        des2 = (((sift_points[s+1])[2:,:])).astype('float32')  # descriptors of the second
-        des1 = np.reshape(des1,(np.shape(des1)[1],128))
-        des2 = np.reshape(des2,(np.shape(des2)[1],128))
-        if np.shape(des1)[0] > np.shape(des2)[0]:
-                 des1 = des1[:-abs(np.shape(des1)[0]-np.shape(des2)[0]),:]  # we are removing the last points so that we have an equal amount of SIFT features between two frames
-        if np.shape(des1)[0] < np.shape(des2)[0]:
-                 des2 = des2[:-abs(np.shape(des1)[0]-np.shape(des2)[0]),:]
-        matches = bf.match(des1,des2)  # an error occurs if two frames have different amounts of SIFT features
-        # try:
-        # except: 
-        #       print('Error!')        
-        for i in range(len(matches)):
-            match.append(matches)
-            point_matches.append([matches[i].queryIdx,matches[i].trainIdx])
-        all_matches.append(point_matches)
-    return match
+    good_matches = []
+    for m,n in matches:
+        if m.distance < 0.75*n.distance:
+            good_matches.append([m])
+
+    # cv.drawMatchesKnn expects list of lists as matches.
+    #img3 = cv2.drawMatchesKnn(img1,kp1,img2,kp2,good,None,flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
+    #plt.imshow(img3),plt.show()
+    return good_matches
 
 def matching_features_SCIKITLEARN(sift_points):
     """Feature matching using nearest neighbours, for pairs of consecutive frames"""
