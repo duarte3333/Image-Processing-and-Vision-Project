@@ -41,7 +41,7 @@ if __name__ == "__main__":
     video_path = config_data[0].split(' ')[1].strip()
     display_video(video_path)
     sift_points, kp_list, img1, img2 = extract_features(video_path)
-    match  = matching_features(sift_points)
+    match = matching_features(sift_points, img1, img2, cv2.SIFT_create(5000))
     
     ## Option1 - with numpy
     #src, dst, _  = create_homography(match, kp_list)
@@ -49,6 +49,10 @@ if __name__ == "__main__":
     #print('condition:',np.linalg.cond(H),'inliers: ', inliers)
     
     ## Option2 - with openCV
+    list_matches = matching_features_SCIKITLEARN(sift_points)
+    list_matches = np.array(list_matches)
+    
+    
     src, dst, H  = create_homography_openCV(match, kp_list)
     
     test_homography(img1, img2, H)

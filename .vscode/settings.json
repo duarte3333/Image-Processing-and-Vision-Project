@@ -1,4 +1,3 @@
 {
-    "editor.inlineSuggest.showToolbar": "onHover",
-    "C_Cpp.intelliSenseEngineFallback": "enabled"
+    "editor.inlineSuggest.showToolbar": "onHover"
 }
