@@ -30,14 +30,17 @@ def RANSAC(src,dst,iter,threshold):
       return best_homography, inliers[0] 
 
 
-def RANSAC_AlteradaAlex(src,dst,iter,threshold):
+def RANSAC_ALEX(src,dst,iter,threshold):
       best_homography = None
       inliers = [0]
       for t in range(iter):
             sample_indices = np.random.choice(int(len(src)), size=4, replace=False)
             #int(len(src)*0.1)
             # Compute the Homography
-            H = compute_homography(src[sample_indices],dst[sample_indices])
+            src_homography = [src[j] for j in sample_indices]
+            dst_homography = [dst[j] for j in sample_indices]
+
+            H = compute_homography(src_homography,dst_homography)
             inl = 0
             for p, q in zip(src, dst):
                 x1 = p[0]
@@ -56,4 +59,5 @@ def RANSAC_AlteradaAlex(src,dst,iter,threshold):
                  best_homography = H
                  inliers[0] = inl
       return best_homography, inliers[0] 
+
 
