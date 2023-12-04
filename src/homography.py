@@ -6,6 +6,7 @@ import cv2
 def compute_homography(src, dst):
         """ This function computes the homography matrix 
         between two sets of points"""
+        # src = preprocessing.normalize(src)   #Normalization
         A = []
         for p, q in zip(src, dst):
             x1 = p[0]
@@ -20,31 +21,15 @@ def compute_homography(src, dst):
         return H
 
 
-def create_homography(match, kp_list, i, j):
+def create_src_dest(match, kp_list, i, j):
     kp1 = kp_list[i]
     kp2 = kp_list[j]
-    
     #Reshaping the points so that they can be normalized
     src_pts = np.float32([ kp1[q.queryIdx].pt for q in match[0] ]).reshape(-1,1,2)
     dst_pts = np.float32([ kp2[t.trainIdx].pt for t in match[1] ]).reshape(-1,1,2)
     src = np.reshape(src_pts,(np.shape(src_pts)[0],2))
     dst = np.reshape(dst_pts,(np.shape(dst_pts)[0],2))
-    # src = preprocessing.normalize(src)   #Normalization
-    # dst = preprocessing.normalize(dst)
-
-    A = []
-    for p, q in zip(src, dst):
-                x1 = p[0]
-                y1 = p[1]
-                x2 = q[0]
-                y2 = q[1]
-                A.append([-x1, -y1, -1, 0, 0, 0, x2*x1, x2*y1, x2])
-                A.append([0, 0, 0, -x1, -y1, -1, y2*x1, y2*y1, y2])
-    _, _, Vt = np.linalg.svd(A, full_matrices=True)
-
-    H =  Vt[-1,:].reshape(3, 3)
-    print("Condition of H: ", np.linalg.cond(H))
-    return src, dst, H
+    return src, dst
 
 def normalize_h(points):
     """Normalize a collection of points in homogeneous coordinates."""

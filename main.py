@@ -9,6 +9,7 @@ from src.matching_features import *
 from src.homography import *
 from src.ransac import *
 from src.parsing import *
+from src.display_video import *
 
 # OVERVIEW:
 #   Feature detection: opencv
@@ -16,32 +17,18 @@ from src.parsing import *
 #   Create Homography: numpy
 #   RANSAC: numpy
     
-
-def display_video(video_path):
-    """ Display the video """
-    capture = cv2.VideoCapture(os.path.abspath(video_path))
-    if not capture.isOpened():
-        print("Error: Unable to open video file.")
-        return
-    while True:
-        ret, frame = capture.read()
-        if not ret:
-            print("Error: Failed to read frame.")
-            break
-        cv2.imshow('frame', frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-    capture.release()
-    cv2.destroyAllWindows()
-
 def homography_two_frames(img1, img2, sift_points, kp_list, option):
     """ Compute the homography for two frames """
     match = matching_features(sift_points, img1, img2, cv2.SIFT_create(5000))
+    print("Number of matches: ", len(match), '\n')
     if (option == 1):
         src, dst, H  = create_homography_openCV(match, kp_list, 0, 19)
     if (option == 2):
-        src, dst, H  = create_homography(match, kp_list, 0, 19)
-        H, inliers = RANSAC(src, dst, 50, 0.8)
+        print(match)
+        src1, dst1 = create_src_dest(match, kp_list, 0, 19)
+        print("src: ", len(src1), '\n')
+        print("dst: ", dst1, '\n')
+        H, inliers = RANSAC(src1, dst1, 50, 0.8)
     test_homography(img1, img2, H)
     
 def create_all_homographies(match, kp_list):
@@ -106,12 +93,15 @@ if __name__ == "__main__":
 
     if (check_syntax()):
         sys.exit(1)
-    config_data = parse_configuration_file(sys.argv[1])
-    match_img_map = parse_points(config_data)
-    video_path = config_data[0].split(' ')[1].strip()
-    #display_video(video_path)
+    config_data = parse_configuration_file(sys.argv[1]) #Parse the configuration file
+    match_img1 , match_map = parse_points(config_data) #Parse the points from the configuration file
+    video_path = config_data[0].split(' ')[1].strip() #Get the video path
+    H_frame1_to_map =compute_homography(match_img1, match_map)
+    print(H_frame1_to_map)
+    print("Condition: ", np.linalg.cond(H_frame1_to_map), '\n')
     
     sift_points, kp_list, img1, img2 = extract_features(video_path)
+<<<<<<< HEAD
     #homography_two_frames(img1, img2, sift_points, kp_list, 1) #option 1 - with openCV; option 2 - with numpy
     
     match2 = matching_features_SCIKITLEARN(sift_points)
@@ -123,6 +113,14 @@ if __name__ == "__main__":
     output_file_path = 'path/file_for_transforms.ext'
     with open(output_file_path, 'wb') as file:
         pickle.dump(matrix_H, file)
+=======
+    homography_two_frames(img1, img2, sift_points, kp_list, 2) #option 1 - with openCV; option 2 - with numpy
+    #match2 = matching_features_SCIKITLEARN(sift_points)    
+    #matrix_H = create_all_homographies(match2, kp_list)
+    # output_file_path = 'path/file_for_transforms.ext'
+    # with open(output_file_path, 'wb') as file:
+    #    pickle.dump(matrix_H, file)
+>>>>>>> new
     
 # Condition -> A*A^(-1) - High condition means small changes in the input can result in large changes in the output
 
