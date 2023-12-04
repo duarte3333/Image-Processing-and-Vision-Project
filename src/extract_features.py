@@ -14,6 +14,7 @@ def count_frames(video_path):
     
 def extract_features(video_path):
     """Extracts the features from the video and stores them in a list"""
+    print(video_path)
     capture = cv2.VideoCapture(os.path.abspath(video_path))
     kp_list = []
     sift_points = [] #nome a definir no config
