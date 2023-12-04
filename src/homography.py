@@ -20,9 +20,9 @@ def compute_homography(src, dst):
         return H
 
 
-def create_homography(match, kp_list):
-    kp1 = kp_list[0]
-    kp2 = kp_list[1]
+def create_homography(match, kp_list, i, j):
+    kp1 = kp_list[i]
+    kp2 = kp_list[j]
     
     #Reshaping the points so that they can be normalized
     src_pts = np.float32([ kp1[q.queryIdx].pt for q in match[0] ]).reshape(-1,1,2)
@@ -58,13 +58,15 @@ def denormalize_homography(H, src_matrix, dst_matrix):
     """Denormalize a homography matrix."""
     return np.dot(np.linalg.inv(dst_matrix), np.dot(H, src_matrix))
 
-def create_homography_openCV(match, kp_list):
-    kp1 = kp_list[0]
-    kp2 = kp_list[19]
+def create_homography_openCV(match, kp_list, i, j):
+    kp1 = kp_list[i]
+    kp2 = kp_list[j]
     
 
-    src_pts = np.float32([ kp1[q[0].queryIdx].pt for q in match ]).reshape(-1,1,2)
-    dst_pts = np.float32([ kp2[t[0].trainIdx].pt for t in match ]).reshape(-1,1,2)
+    # src_pts = np.float32([kp1[q[0].queryIdx].pt for q in match ]).reshape(-1,1,2)
+    # dst_pts = np.float32([kp2[t[0].trainIdx].pt for t in match ]).reshape(-1,1,2)
+    src_pts = np.float32([kp1[q[0].queryIdx].pt for q in match ]).reshape(-1,1,2)
+    dst_pts = np.float32([kp2[t[0].trainIdx].pt for t in match ]).reshape(-1,1,2)
 
     # Normalize points
     # src_pts, src_matrix = normalize_h(src_pts)
@@ -100,6 +102,9 @@ def test_homography(img_src, img_dest, homography):
 # DmatchN = [distance, imgIdx, queryIdx, trainIdx]
 # src_pts = [kp1[Dmatch1[0].queryIdx].pt, ... , Dmatch1[n].queryIdx].pt] (size of the ones that match- 100)
 # kp1[Dmatch1[0].queryIdx].pt = (x,y) of the point in the image
+#[[idx_i][idx_j]]
+
+# match[j]=[[1,2,3,4,5,6,7,8],[36478,574382,54324,567,567,45,12]]
 
 # eigenvalue,eigenvector=eig(np.matmul(np.transpose(A),A)) 
 # idx = eigenvalue.argsort() #sorts the eigenvalues in ascending order
