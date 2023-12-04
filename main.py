@@ -101,7 +101,6 @@ if __name__ == "__main__":
     print("Condition: ", np.linalg.cond(H_frame1_to_map), '\n')
     
     sift_points, kp_list, img1, img2 = extract_features(video_path)
-<<<<<<< HEAD
     #homography_two_frames(img1, img2, sift_points, kp_list, 1) #option 1 - with openCV; option 2 - with numpy
     
     match2 = matching_features_SCIKITLEARN(sift_points)
@@ -113,14 +112,6 @@ if __name__ == "__main__":
     output_file_path = 'path/file_for_transforms.ext'
     with open(output_file_path, 'wb') as file:
         pickle.dump(matrix_H, file)
-=======
-    homography_two_frames(img1, img2, sift_points, kp_list, 2) #option 1 - with openCV; option 2 - with numpy
-    #match2 = matching_features_SCIKITLEARN(sift_points)    
-    #matrix_H = create_all_homographies(match2, kp_list)
-    # output_file_path = 'path/file_for_transforms.ext'
-    # with open(output_file_path, 'wb') as file:
-    #    pickle.dump(matrix_H, file)
->>>>>>> new
     
 # Condition -> A*A^(-1) - High condition means small changes in the input can result in large changes in the output
 
