@@ -36,8 +36,7 @@ def display_video(video_path):
 
 def homography_two_frames(img1, img2, sift_points, kp_list, option):
     """ Compute the homography for two frames """
-    #match = matching_features(sift_points, img1, img2, cv2.SIFT_create(5000))
-    match = matching_features_matrix(sift_points)
+    match = matching_features(sift_points, img1, img2, cv2.SIFT_create(5000))
     if (option == 1):
         src, dst, H  = create_homography_openCV(match, kp_list, 0, 19)
     if (option == 2):
@@ -55,6 +54,7 @@ def create_all_homographies(match, kp_list):
         while (match[j]):
             print(match[i][j])
             matrix_H[i][j] = create_homography(match[i][j], kp_list, i, j)
+            matrix_H[i][j], inliers = RANSAC(src, dst, 50, 0.8)
             j += 1
         i += 1
     return matrix_H
@@ -91,16 +91,15 @@ if __name__ == "__main__":
     #display_video(video_path)
     
     sift_points, kp_list, img1, img2 = extract_features(video_path)
+    #homography_two_frames(img1, img2, sift_points, kp_list, 1) #option 1 - with openCV; option 2 - with numpy
     
-    homography_two_frames(img1, img2, sift_points, kp_list, 1) #option 1 - with openCV; option 2 - with numpy
-    
-"""    match2 = matching_features_SCIKITLEARN(sift_points)
+    match2 = matching_features_SCIKITLEARN(sift_points)
     print(match2)
     
     matrix_H = create_all_homographies(match2, kp_list)
     output_file_path = 'path/file_for_transforms.ext'
     with open(output_file_path, 'wb') as file:
-        pickle.dump(matrix_H, file) """
+        pickle.dump(matrix_H, file)
     
 # Condition -> A*A^(-1) - High condition means small changes in the input can result in large changes in the output
 
