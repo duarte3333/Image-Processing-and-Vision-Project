@@ -68,28 +68,7 @@ def create_sequential_homographies(matches, sift_points):
         H_sequential = np.hstack([H_sequential, H])
         
     return H_sequential
-    
-def parse_points(config_data):
-    """ Parse the points from the configuration file """
-    line_map = config_data[1].split('   ')
-    print(line_map)
-    line_frame = config_data[2].split('   ')
-    i = 2
-    match_img = []
-    match_map = []
-    size = len(line_map)
-    while (size > i):
-        #if (i+1 < size):
-        match_img.append((line_map[i].strip(), line_map[i+1].strip()))
-        match_map.append((line_map[i].strip(), line_map[i+1].strip()))
-        i+=2
-    print("image matches: ", match_img)
-    print("map matches: ", match_map)
-    # return match_img, match_map
-    # match_img_map = []
-    # for i in range(1, len(config_data)):
-    #     match_img_map.append(config_data[i].split(' ')[1].strip())
-    # return match_img_map
+
 
 if __name__ == "__main__":
 
