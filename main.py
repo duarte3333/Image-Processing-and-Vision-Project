@@ -58,6 +58,27 @@ def create_all_homographies(match, kp_list):
             j += 1
         i += 1
     return matrix_H
+
+def create_sequential_homographies(matches, sift_points):
+    H_sequential=np.empty([11,0])
+    
+    for i in range(len(matches)):
+        match=matches[i]
+        kp_src = sift_points[i][:2,:]
+        kp_dst = sift_points[i+1][:2,:]
+
+        src_pts = np.float32([ kp_src[:,q] for q in match[0,:]])
+        dst_pts = np.float32([ kp_src[:,q] for q in match[0,:]])
+
+
+
+
+
+        H_parameters, inliers = RANSAC(src_pts, dst_pts, 50, 0.8)
+
+        H=np.transpose(np.array([i+1, i+2, H_parameters]))
+        H_sequential = np.hstack([H_sequential, H])
+    return H_sequential
     
 def parse_points(config_data):
     """ Parse the points from the configuration file """
@@ -96,6 +117,8 @@ if __name__ == "__main__":
     match2 = matching_features_SCIKITLEARN(sift_points)
     print(match2)
     
+    H_sequential = create_sequential_homographies(match2, sift_points)
+
     matrix_H = create_all_homographies(match2, kp_list)
     output_file_path = 'path/file_for_transforms.ext'
     with open(output_file_path, 'wb') as file:

@@ -25,7 +25,7 @@ def matching_features_SCIKITLEARN(sift_points):
     """Feature matching using nearest neighbours, for pairs of consecutive frames"""
     
     matches=[]
-    Threshold=0.7
+    Threshold=0.75
 
     for s in range(len(sift_points)-1):
         frame1_descriptors = sift_points[s][2:,:] #descriptor values of every feature point for video frame s (current shape: 128x5000)
@@ -44,13 +44,12 @@ def matching_features_SCIKITLEARN(sift_points):
         features_matches=np.empty([4,0])
         features_not_mateched=[]
         for i in range(len(distances)): #loop (number of features from sift)
-            if distances[i,0]> Threshold*distances[i,1]: 
-                #point is not good
-                features_not_mateched.append(i) #features from this frame that were not matched
-            else:
+            if distances[i,0]< Threshold*distances[i,1] and distances[i,0]< 700:
                 #match is good for first neighbour found
                 features_matches= np.hstack((  features_matches   , np.array([[int(i)],[int(indices[i,0])], [distances[i,0]],[distances[i,1]]])  ))
-
+            else:                
+                #point is not good
+                features_not_mateched.append(i) #features from this frame that were not matched
         
         features_matches = features_matches[:, features_matches[1, :].argsort()] # this sorts the check_for_duplicates matrix in accordance to the values of it's second line
         features_matches_deletedColumns= features_matches.copy()
@@ -70,7 +69,7 @@ def matching_features_SCIKITLEARN(sift_points):
         
         matched_inThis_frame = features_matches_deletedColumns[:, features_matches_deletedColumns[0, :].argsort()] #to be in order in acoordance to index of frame s
 
-        matches.append( (matched_inThis_frame[0:2,:]).tolist())
+        matches.append( (matched_inThis_frame[0:2,:]))
 
     return matches
 
