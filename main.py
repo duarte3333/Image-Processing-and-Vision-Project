@@ -101,18 +101,18 @@ if __name__ == "__main__":
     sift_points, kp_list, img1, img2 = extract_features(video_path)
     #homography_two_frames(img1, img2, sift_points, kp_list, 1) #option 1 - with openCV; option 2 - with numpy
     
-    match2 = matching_features_SCIKITLEARN(sift_points)
-    print(match2)
+    # match2 = matching_features_SCIKITLEARN(sift_points)
+    # print(match2)
     
-    H_sequential = create_sequential_homographies(match2, sift_points)
-    print('H_sequential' , H_sequential)
-    H_output = homographie_to_map(H_sequential, H_frame1_to_map)
-    print('H_output', H_output)
+    # H_sequential = create_sequential_homographies(match2, sift_points)
+    # print('H_sequential' , H_sequential)
+    # H_output = homographie_to_map(H_sequential, H_frame1_to_map)
+    # print('H_output', H_output)
 
-    matrix_H = create_all_homographies(match2, kp_list)
-    output_file_path = 'path/file_for_transforms.ext'
-    with open(output_file_path, 'wb') as file:
-        pickle.dump(matrix_H, file)
+    # matrix_H = create_all_homographies(match2, kp_list)
+    # output_file_path = 'path/file_for_transforms.ext'
+    # with open(output_file_path, 'wb') as file:
+    #     pickle.dump(matrix_H, file)
     
 # Condition -> A*A^(-1) - High condition means small changes in the input can result in large changes in the output
 
