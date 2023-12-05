@@ -46,6 +46,23 @@ def create_all_homographies(match, kp_list):
         i += 1
     return matrix_H
 
+def homographie_to_map(H_sequential, H_frame1_to_map):
+    H_output=np.empty([11,0])
+    H_i = np.vstack((np.array([[0], [1]]) , H_frame1_to_map.reshape(9,1) ))
+    H_output = np.hstack([H_output, H_i])
+                         
+    for i in range(1, H_sequential.shape(1)):
+        #I am still not sure with the order of these matrix multiplications
+        T_to_map= np.matmul( H_output[2:,i-1].reshape(3,3) , H_sequential[2:,i-1].reshape(3,3))
+
+        H_i = np.vstack(( np.array([[0],H_sequential[1,i-1]] ), T_to_map.reshape(9,1) ))
+
+        H_output = np.hstack([H_output, H_i])
+            
+
+
+    return H_output
+
 def create_sequential_homographies(matches, sift_points):
     H_sequential=np.empty([11,0])
 
@@ -88,6 +105,9 @@ if __name__ == "__main__":
     print(match2)
     
     H_sequential = create_sequential_homographies(match2, sift_points)
+    print('H_sequential' , H_sequential)
+    H_output = homographie_to_map(H_sequential, H_frame1_to_map)
+    print('H_output', H_output)
 
     matrix_H = create_all_homographies(match2, kp_list)
     output_file_path = 'path/file_for_transforms.ext'
