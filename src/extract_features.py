@@ -42,7 +42,7 @@ def extract_features(video_path):
         k += 100
     print("(Nº features, Nº descriptors per feature): ", descriptors.shape)
     print("Nº of frames extracted: ", len(sift_points))
-    return sift_points, kp_list, img1, img2
+    return sift_points, img1, img2
     
     # Framepoints:
     #  x_1  x_2 ...

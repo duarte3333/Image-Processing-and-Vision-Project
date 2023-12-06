@@ -21,11 +21,12 @@ def create_output_keypoints(kp_list, output_file_path):
 
     # Escrever a saída no arquivo
     with open(output_file_path, 'w') as output_file:
-        for frame_number, keypoints in enumerate(kp_list, start=1):
-            for keypoint in kp_list:
-                    x, y = keypoint[0] , keypoint[1]
-                    descriptor = keypoint[2:]
-                    descriptors_str = "\t".join(str(d) for d in descriptor)
+        for keypoint in kp_list:
+                print(keypoint[0])
+                print(keypoint[0][0])
+                x, y = keypoint[0] , keypoint[1]
+                descriptor = keypoint[2:]
+                descriptors_str = "\t".join(str(d) for d in descriptor)
 
-                    output_file.write(f"{x}\t{y}\t{descriptors_str}\n")
+                output_file.write("{x}\t{y}\t{descriptors_str}\n")
     print(f'Saída salva em: {output_file_path}')

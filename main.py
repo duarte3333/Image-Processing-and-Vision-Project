@@ -64,7 +64,7 @@ if __name__ == "__main__":
     video_path = config_data[0].split(' ')[1].strip() #Get the video path
     
     H_frame1_to_map =compute_homography(match_img1, match_map)    
-    sift_points, kp_list, img1, img2 = extract_features(video_path)
+    sift_points, img1, img2 = extract_features(video_path)
     match = matching_features_SCIKITLEARN(sift_points)
     H_sequential = create_sequential_homographies(match, sift_points)
     H_output = homography_to_map(H_sequential, H_frame1_to_map)
