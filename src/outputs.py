@@ -27,6 +27,6 @@ def create_output_keypoints(kp_list, output_file_path, nr_points):
         points = points.reshape((points.shape[1],points.shape[0]))
         new_list.append(points)
 
-    savemat(output_file_path, {'frame': new_list})
+    savemat(output_file_path, {'Keypoints': new_list})
 
   
