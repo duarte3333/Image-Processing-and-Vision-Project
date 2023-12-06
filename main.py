@@ -19,6 +19,29 @@ from src.outputs import *
 #   Create Homography: numpy
 #   RANSAC: numpy
 
+def all_homographies(H_sequential):
+    """ This function computes the homography from any frame i to any frame j (Hij), with j>i
+    This means that we are doing homography in the direction of a bigger frame, which is contrary to the direction of the H_sequential homographies
+    To solve this, the H_sequential matrixes must be inverted before being used"""
+
+    H_output=np.empty([11,0])
+    
+    for i in range(1,H_sequential.shape[1]): #H_sequential[0] is H_21
+        for j in range(i+1, H_sequential.shape[1] +1):
+            #the homographie between frame j-1 and j is:
+
+            H_jminus1_j = np.linalg.inv(H_sequential[2:,j-2].reshape((3,3))) #H_sequential is H from 2 to 1, from 3 to 2, from 4 to 3... and we want the inverse direction
+            
+            if i+1 == j: #simple homographie
+                T_to_map=  H_jminus1_j
+            else: #compound of sequential homographies
+                T_to_map= np.matmul( H_jminus1_j , H_output[2:,-1].reshape(3,3) ) # example: frame4 = H34*H23*H12*frame1
+
+            H_i = np.vstack((np.array([[i],[j]] ), T_to_map.reshape(9,1) ))
+            H_output = np.hstack([H_output, H_i])
+        
+    return H_output
+
 def homography_to_map(H_sequential, H_frame1_to_map):
     """ This function computes the homography from any frame to the map.
         For frame n, H_output[2:,i-1] should be the homography from frame n-1 to the map. 
@@ -28,7 +51,7 @@ def homography_to_map(H_sequential, H_frame1_to_map):
     H_i = np.vstack((np.array([[0], [1]]) , H_frame1_to_map.reshape(9,1) )) #first part of the array is 0 and 1 - which means homography from frame 1 to map (frame 0)
     H_output = np.hstack([H_output, H_i])
     
-    for i in range(1, len(H_sequential)):
+    for i in range(1, H_sequential.shape[1]):
         T_to_map= np.matmul(H_output[2:,i-1].reshape(3,3), H_sequential[2:,i-1].reshape(3,3)) 
         H_i = np.vstack((np.array([[0],[H_sequential[1,i-1]]] ), T_to_map.reshape(9,1) ))
         H_output = np.hstack([H_output, H_i])
@@ -67,11 +90,15 @@ if __name__ == "__main__":
 
     sift_points, nr_points = extract_features(video_path)
     
-    #match = matching_features_SCIKITLEARN(sift_points)
-    # H_sequential = create_sequential_homographies(match, sift_points)
-    #H_output = homography_to_map(H_sequential, H_frame1_to_map)
-    #print('H_output', H_output)
-    
+    """ match = matching_features_SCIKITLEARN(sift_points)
+    H_sequential = create_sequential_homographies(match, sift_points)
+    # type_homography tem de ser criada no parsing
+    if type_homography =='map':
+        H_output = homography_to_map(H_sequential, H_frame1_to_map)
+    elif type_homography =='all':
+        H_output = all_homographies(H_sequential)
+    print('H_output', H_output)
+     """
     create_output_keypoints(sift_points, 'outputs/keypoints.mat', nr_points)
     #create_output(H_output, 'outputs/transformations.ext')        
     
