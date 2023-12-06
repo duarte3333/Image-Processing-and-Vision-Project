@@ -43,7 +43,7 @@ def matching_features_SCIKITLEARN(sift_points):
         
         features_matches=np.empty([4,0])
         features_not_mateched=[]
-        for i in range(len(distances)): #loop (number of features from sift)
+        for i in range(len(distances)): 
             if distances[i,0]< Threshold*distances[i,1] and distances[i,0]< 700:
                 #match is good for first neighbour found
                 features_matches= np.hstack((  features_matches   , np.array([[int(i)],[int(indices[i,0])], [distances[i,0]],[distances[i,1]]])  ))
