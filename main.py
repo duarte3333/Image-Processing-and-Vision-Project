@@ -50,14 +50,14 @@ def homography_to_map(H_sequential, H_frame1_to_map):
     H_output=np.empty([11,0])
     H_i = np.vstack((np.array([[0], [1]]) , H_frame1_to_map.reshape(9,1) )) #first part of the array is 0 and 1 - which means homography from frame 1 to map (frame 0)
     H_output = np.hstack([H_output, H_i])
-                         
-    for i in range(1, H_sequential.shape(1)):
+                            
+    for i in range(1, len(H_sequential)):
         T_to_map= np.matmul(  H_output[2:,i-1].reshape(3,3), H_sequential[2:,i-1].reshape(3,3)) 
         #for frame n, H_output[2:,i-1] should be the homography from frame n-1 to the map. 
         # H_sequential[2:,i-1] should be the homography from frame n to n-1
         # So T_to_Map should be the homography from frame n to map
 
-        H_i = np.vstack(( np.array([[0],H_sequential[1,i-1]] ), T_to_map.reshape(9,1) ))
+        H_i = np.vstack(( np.array([[0],[H_sequential[1,i-1]]] ), T_to_map.reshape(9,1) ))
 
         H_output = np.hstack([H_output, H_i])
     return H_output
