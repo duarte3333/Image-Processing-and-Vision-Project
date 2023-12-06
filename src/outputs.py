@@ -21,6 +21,7 @@ def create_output_keypoints(kp_list, output_file_path, nr_points):
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
 
+    #just a test
     new_list = []
     for item in kp_list:
         points = item[:,:nr_points]
