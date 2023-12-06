@@ -14,26 +14,20 @@ def count_frames(video_path):
     
 def extract_features(video_path):
     """Extracts the features from the video and stores them in a list"""
-    print(video_path)
     capture = cv2.VideoCapture(os.path.abspath(video_path))
-    kp_list = []
     sift_points = [] #nome a definir no config
-    sift = cv2.SIFT_create(5000) #number of sift points
-    img1, img2 = None, None
+    nr_points = 5000
+    sift = cv2.SIFT_create(nr_points) #number of sift points
     k = 0
     count_frames(video_path)
     while k <= 1900:
         capture.set(cv2.CAP_PROP_POS_FRAMES, k)
         success, frame = capture.read() #read the video
         if success:
-            if (k == 0):
-                img1 = frame
-            if (k == 1900):
-                img2 = frame
             frame_points = []
             gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY) #convert image to gray
             key_points, descriptors = sift.detectAndCompute(gray,None) 
-            kp_list.append(key_points)
+            
             frame_points = ([key_points[0].pt[0],key_points[0].pt[1]]+descriptors[0].tolist())
             for i in range(1,len(key_points)):
                  temp_column = ([key_points[i].pt[0],key_points[i].pt[1]]+descriptors[i].tolist())
@@ -42,7 +36,7 @@ def extract_features(video_path):
         k += 100
     print("(Nº features, Nº descriptors per feature): ", descriptors.shape)
     print("Nº of frames extracted: ", len(sift_points))
-    return sift_points, img1, img2
+    return sift_points, nr_points
     
     # Framepoints:
     #  x_1  x_2 ...

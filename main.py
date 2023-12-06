@@ -59,17 +59,19 @@ def create_sequential_homographies(matches, sift_points):
 if __name__ == "__main__":
     if (check_syntax()):
         sys.exit(1)
+
     config_data = parse_configuration_file(sys.argv[1]) #Parse the configuration file
     match_img1 , match_map = parse_points(config_data) #Parse the points from the configuration file
     video_path = config_data[0].split(' ')[1].strip() #Get the video path
+    #H_frame1_to_map =compute_homography(match_img1, match_map)    
+
+    sift_points, nr_points = extract_features(video_path)
     
-    H_frame1_to_map =compute_homography(match_img1, match_map)    
-    sift_points, img1, img2 = extract_features(video_path)
-    match = matching_features_SCIKITLEARN(sift_points)
-    H_sequential = create_sequential_homographies(match, sift_points)
-    H_output = homography_to_map(H_sequential, H_frame1_to_map)
-    print('H_output', H_output)
+    #match = matching_features_SCIKITLEARN(sift_points)
+    # H_sequential = create_sequential_homographies(match, sift_points)
+    #H_output = homography_to_map(H_sequential, H_frame1_to_map)
+    #print('H_output', H_output)
     
-    create_output_keypoints(sift_points, 'outputs/keypoints.ext')
-    create_output(H_output, 'outputs/transformations.ext')        
+    create_output_keypoints(sift_points, 'outputs/keypoints.mat', nr_points)
+    #create_output(H_output, 'outputs/transformations.ext')        
     
