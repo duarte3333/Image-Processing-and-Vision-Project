@@ -44,7 +44,7 @@ def matching_features_SCIKITLEARN(sift_points):
         features_matches=np.empty([4,0])
         features_not_mateched=[]
         for i in range(len(distances)): 
-            if distances[i,0]< Threshold*distances[i,1] and distances[i,0]< 700:
+            if distances[i,0]< Threshold*distances[i,1]:
                 #match is good for first neighbour found
                 features_matches= np.hstack((  features_matches   , np.array([[int(i)],[int(indices[i,0])], [distances[i,0]],[distances[i,1]]])  ))
             else:                
@@ -124,3 +124,11 @@ def matching_features_matrix(sift_1frame, sift_otherframes):
         matched_inThis_frame = features_matches_deletedColumns[:, features_matches_deletedColumns[0, :].argsort()]
         matches.append(matched_inThis_frame[0:2,:])
     return matches
+
+
+#WHAT IS MATCH?
+#match = {[[D_matchFrame1WithFrame2_1, .. DmatchFrame1WithFrame2_N], [D_matchFrame1WithFrameN, .. DmatchFrame1WithFrameN]],
+#                                                   .....
+#        [[D_matchFrameNWithFrame1_1, .. DmatchFrameNWithFrame1_N], [D_matchFrameNWithFrameN_1, .. DmatchFrameNWithFrameN_N]]}
+# match[i] = list of all matches of frame i with all other frames
+# match[i][j] = list of all matches of frame i with frame j
