@@ -48,7 +48,7 @@ def parse_points(config_data):
         match_img.append((line_map[i].strip(), line_map[i+1].strip()))
         match_map.append((line_frame_final[i].strip(), line_frame_final[i+1].strip()))
         i += 2
-    print("image matches: ", match_img, '\n')
+    print("image matches: ", match_img)
     print("map matches: ", match_map, '\n')
     match_img = np.float32(match_img)
     match_map = np.float32(match_map)
