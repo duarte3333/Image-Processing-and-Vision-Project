@@ -26,8 +26,8 @@ def all_homographies(H_sequential):
 
     H_output=np.empty([11,0])
     
-    for i in range(1,H_sequential.shape[1]): #H_sequential[0] is H_21
-        for j in range(i+1, H_sequential.shape[1] +1):
+    for i in range(1,H_sequential.shape[1]+1): #H_sequential[0] is H_21
+        for j in range(i+1, H_sequential.shape[1] +2):
             #the homographie between frame j-1 and j is:
 
             H_jminus1_j = np.linalg.inv(H_sequential[2:,j-2].reshape((3,3))) #H_sequential is H from 2 to 1, from 3 to 2, from 4 to 3... and we want the inverse direction
@@ -37,7 +37,7 @@ def all_homographies(H_sequential):
             else: #compound of sequential homographies
                 T_to_map= np.matmul( H_jminus1_j , H_output[2:,-1].reshape(3,3) ) # example: frame4 = H34*H23*H12*frame1
 
-            H_i = np.vstack((np.array([[i],[j]] ), T_to_map.reshape(9,1) ))
+            H_i = np.vstack((np.array([[j],[i]] ), T_to_map.reshape(9,1) ))
             H_output = np.hstack([H_output, H_i])
         
     return H_output
@@ -59,7 +59,7 @@ def homography_to_map(H_sequential, H_frame1_to_map):
     return H_output
 
 def create_sequential_homographies(matches, sift_points):
-    """ This function creates the homographies from frame n to frame n+1.
+    """ This function creates the homographies from frame n+1 to frame n.
         We want the homography from frame n+1 to frame n because we will 
         want the homography from any frame back to the frame 1 and then to the map."""
     H_sequential=np.empty([11,0])
@@ -72,6 +72,7 @@ def create_sequential_homographies(matches, sift_points):
             src_pts.append(  (float(kp_src[0,int(k)])   , float(kp_src[1,int(k)]))   )
         for k in matches[i][1,:]:
             dst_pts.append(  (float(kp_dst[0,int(k)])   , float(kp_dst[1,int(k)]))   )
+
         H_parameters, inliers = RANSAC(src_pts, dst_pts, 150, 0.8)
         indexes_frames = np.array([[i+1], [i+2]])
         H = np.vstack((indexes_frames, H_parameters.reshape(9,1) ))
@@ -90,7 +91,7 @@ if __name__ == "__main__":
 
     sift_points, nr_points = extract_features(video_path)
     
-    """ match = matching_features_SCIKITLEARN(sift_points)
+    match = matching_features_SCIKITLEARN(sift_points)
     H_sequential = create_sequential_homographies(match, sift_points)
     # type_homography tem de ser criada no parsing
     if type_homography =='map':
@@ -98,7 +99,7 @@ if __name__ == "__main__":
     elif type_homography =='all':
         H_output = all_homographies(H_sequential)
     print('H_output', H_output)
-     """
+    
     create_output_keypoints(sift_points, 'outputs/keypoints.mat', nr_points)
-    #create_output(H_output, 'outputs/transformations.ext')        
+    create_output(H_output, 'outputs/transformations.ext')        
     
