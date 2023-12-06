@@ -21,24 +21,12 @@ def create_output_keypoints(kp_list, output_file_path, nr_points):
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
 
-    #just a test
     new_list = []
     for item in kp_list:
-        points = item[:,:nr_points]
+        points = item[:,:nr_points]  #put the size of each array in an uniform way
         points = points.reshape((points.shape[1],points.shape[0]))
         new_list.append(points)
 
     savemat(output_file_path, {'frame': new_list})
 
   
-    # Escrever a saída no arquivo
-   # with open(output_file_path, 'w') as output_file:
-      #  for keypoint in kp_list:
-          #     for i in range(keypoint.shape[1]):
-            #       x, y = str(keypoint[0,i]) , str(keypoint[1,i])
-             #      descriptor = keypoint[2:,i]
-             #      descriptors_str = "\t".join(str(d) for d in descriptor) 
-             #      output_file.write(f"{x}\t{y}\t{descriptors_str}\n")
-                
-                
-    #print(f'Saída salva em: {output_file_path}')
