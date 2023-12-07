@@ -7,12 +7,7 @@ def create_output(output, output_file_path):
     output_directory = os.path.dirname(output_file_path)
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
-
-    # Escrever a saída no arquivo
-    with open(output_file_path, 'w') as output_file:
-        for row in output:
-            output_file.write('\t'.join(map(str, row)) + '\n')
-    print(f'Saída salva em: {output_file_path}')
+    savemat(output_file_path, {'Homographies': output}) #save the outputs into a .mat file 
 
     
 def create_output_keypoints(kp_list, output_file_path, nr_points):
