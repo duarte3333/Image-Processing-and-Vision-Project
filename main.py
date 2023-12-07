@@ -80,26 +80,31 @@ def create_sequential_homographies(matches, sift_points):
         
     return H_sequential
 
+def final_parsing(config_data):
+    video_path = config_data[0].split(' ')[1].strip() #Get the video path
+    type_homography = config_data[4].split(' ')[3] #Get the type of homography
+    file_name_keypoints = "outputs/" + config_data[3].split(' ')[1] #Get the name of the keypoints file
+    file_name_tranformations = "outputs/" + config_data[5].split(' ')[1] #Get the name of the transformations file
+    return video_path, type_homography, file_name_keypoints, file_name_tranformations
+    
 if __name__ == "__main__":
     if (check_syntax()):
         sys.exit(1)
-
     config_data = parse_configuration_file(sys.argv[1]) #Parse the configuration file
     match_img1 , match_map = parse_points(config_data) #Parse the points from the configuration file
-    video_path = config_data[0].split(' ')[1].strip() #Get the video path
-    #H_frame1_to_map =compute_homography(match_img1, match_map)    
-
+    video_path, type_homography, file_name_keypoints, file_name_tranformations = final_parsing(config_data)
+    
+    H_frame1_to_map =compute_homography(match_img1, match_map)    
     sift_points, nr_points = extract_features(video_path)
     
     match = matching_features_SCIKITLEARN(sift_points)
     H_sequential = create_sequential_homographies(match, sift_points)
-    # type_homography tem de ser criada no parsing
     if type_homography =='map':
         H_output = homography_to_map(H_sequential, H_frame1_to_map)
     elif type_homography =='all':
         H_output = all_homographies(H_sequential)
-    print('H_output', H_output)
+    #print('H_output', H_output)
     
-    create_output_keypoints(sift_points, 'outputs/keypoints.mat', nr_points)
-    create_output(H_output, 'outputs/transformations.ext')        
+    create_output_keypoints(sift_points, file_name_keypoints, nr_points)
+    create_output(H_output, file_name_tranformations)        
     
