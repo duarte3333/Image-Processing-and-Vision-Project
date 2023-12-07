@@ -73,7 +73,7 @@ def create_sequential_homographies(matches, sift_points):
         for k in matches[i][1,:]:
             dst_pts.append(  (float(kp_dst[0,int(k)])   , float(kp_dst[1,int(k)]))   )
 
-        H_parameters, inliers = RANSAC(src_pts, dst_pts, 150, 0.8)
+        H_parameters, inliers = RANSAC(src_pts, dst_pts, 72, 0.8) #71.36 iterations to 0.99 suceess-> for 50% inliers
         indexes_frames = np.array([[i+1], [i+2]])
         H = np.vstack((indexes_frames, H_parameters.reshape(9,1) ))
         H_sequential = np.hstack([H_sequential, H])
