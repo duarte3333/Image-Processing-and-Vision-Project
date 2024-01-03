@@ -12,6 +12,7 @@ from src.parsing import *
 from src.display_video import *
 from src.view_homography import *
 from src.outputs import *
+from src.optimized_corners import *
 
 # OVERVIEW:
 #   Feature detection: opencv
@@ -96,14 +97,18 @@ if __name__ == "__main__":
     
     H_frame1_to_map =compute_homography(match_img1, match_map)    
     sift_points, nr_points = extract_features(video_path)
-    
+    width = cv2.VideoCapture(video_path).get(cv2.CAP_PROP_FRAME_WIDTH)
+    height = cv2.VideoCapture(video_path).get(cv2.CAP_PROP_FRAME_HEIGHT)
+    print(f"Video width: {width}")
+    print(f"Video height: {height}")
     match = matching_features_SCIKITLEARN(sift_points)
     H_sequential = create_sequential_homographies(match, sift_points)
     if type_homography =='map':
         H_output = homography_to_map(H_sequential, H_frame1_to_map)
     elif type_homography =='all':
         H_output = all_homographies(H_sequential)
-    #print('H_output', H_output)
+    H_output = recalculate_homographies_if_intersection(H_output, height, width, sift_points, match)
+    print('H_output', H_output)
     
     create_output_keypoints(sift_points, file_name_keypoints, nr_points)
     create_output(H_output, file_name_tranformations)        
