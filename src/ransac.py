@@ -28,6 +28,6 @@ def RANSAC(src,dst,iter,threshold):
             inliers_arr = np.array(inliers_arr)
             if inl > inliers:
                   best_inliers_arr = inliers_arr
-                  best_homography = compute_homography(best_inliers_arr[:, :2], best_inliers_arr[:, 2:4])
                   inliers = inl
+      best_homography = compute_homography(best_inliers_arr[:, :2], best_inliers_arr[:, 2:4])
       return best_homography, inliers
