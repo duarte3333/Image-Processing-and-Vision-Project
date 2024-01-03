@@ -1,6 +1,7 @@
 import cv2
 import os
 import numpy as np
+import time
 
 def horizon_mask(video_path, video_name, fps=60, codec="MJPG"):
     cap = cv2.VideoCapture(video_path)
@@ -32,7 +33,7 @@ def horizon_mask(video_path, video_name, fps=60, codec="MJPG"):
     cv2.destroyAllWindows()
     video.release()
 
-def bumper_mask(input_video, video_name, fps=60, codec="MJPG"):
+def bumper_mask(input_video, video_name, fps=30, codec="MJPG", runtime=None):
     cap = cv2.VideoCapture(input_video)
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -48,6 +49,7 @@ def bumper_mask(input_video, video_name, fps=60, codec="MJPG"):
     center = (new_width // 2, new_height // 2)
     axes = (new_width // 2, new_height // 2)
 
+    start_time = time.time()
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
@@ -68,14 +70,14 @@ def bumper_mask(input_video, video_name, fps=60, codec="MJPG"):
 
         video.write(frame_with_mask)
         cv2.imshow('BACK video with bumper mask', frame_with_mask)
-        if cv2.waitKey(25) & 0xFF == ord('q'):
+        if cv2.waitKey(25) & 0xFF == ord('q') or (time is not None and time.time() - start_time >= runtime):
             break
 
     cap.release()
     cv2.destroyAllWindows()
     video.release()
 
-def left_mask(input_video, video_name, fps=60, codec="MJPG"):
+def left_mask(input_video, video_name, fps=30, codec="MJPG", runtime=None):
     cap = cv2.VideoCapture(input_video)
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -83,6 +85,7 @@ def left_mask(input_video, video_name, fps=60, codec="MJPG"):
     fourcc = cv2.VideoWriter_fourcc(*codec)
     video = cv2.VideoWriter(video_name, fourcc, fps, (width, height))
 
+    start_time = time.time()
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
@@ -103,14 +106,14 @@ def left_mask(input_video, video_name, fps=60, codec="MJPG"):
 
         video.write(frame_with_mask)
         cv2.imshow('LEFT video with mask', frame_with_mask)
-        if cv2.waitKey(25) & 0xFF == ord('q'):
+        if cv2.waitKey(25) & 0xFF == ord('q') or (time is not None and time.time() - start_time >= runtime):
             break
 
     cap.release()
     cv2.destroyAllWindows()
     video.release()
 
-def right_mask(input_video, video_name, fps=60, codec="MJPG"):
+def right_mask(input_video, video_name, fps=30, codec="MJPG", runtime=None):
     cap = cv2.VideoCapture(input_video)
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -118,6 +121,7 @@ def right_mask(input_video, video_name, fps=60, codec="MJPG"):
     fourcc = cv2.VideoWriter_fourcc(*codec)
     video = cv2.VideoWriter(video_name, fourcc, fps, (width, height))
 
+    start_time = time.time()
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
@@ -138,7 +142,7 @@ def right_mask(input_video, video_name, fps=60, codec="MJPG"):
 
         video.write(frame_with_mask)
         cv2.imshow('RIGHT video with mask', frame_with_mask)
-        if cv2.waitKey(25) & 0xFF == ord('q'):
+        if cv2.waitKey(25) & 0xFF == ord('q') or (time is not None and time.time() - start_time >= runtime):
             break
 
     cap.release()
@@ -150,15 +154,14 @@ video_paths = ["video\TESLA_IST_ORIGINAL\TESLA_IST_ORIGINAL\\2023-04-29_16-40-01
                "video\TESLA_IST_ORIGINAL\TESLA_IST_ORIGINAL\\2023-04-29_16-40-01-left_repeater.mp4",
                "video\TESLA_IST_ORIGINAL\TESLA_IST_ORIGINAL\\2023-04-29_16-40-01-right_repeater.mp4"]
 
-bumper_mask(video_paths[0], "back_video_masked.avi")
+bumper_mask(video_paths[0], "back_video_masked.avi", runtime=5)
 # front_masked = front video does not need masking. 
-left_mask(video_paths[2], "left_video_masked.avi")
-right_mask(video_paths[3], "right_video_masked.avi")
-
+left_mask(video_paths[2], "left_video_masked.avi", runtime=5)
+right_mask(video_paths[3], "right_video_masked.avi", runtime=5)
 
 """
 #  Example usage:
 input_video = "video\TESLA_IST_ORIGINAL\TESLA_IST_ORIGINAL\\2023-04-29_16-40-01-left_repeater.mp4"
 video_name = "example_video_with_mask.avi"
-left_mask(input_video, video_name)
+left_mask(input_video, video_name, time=3)  # Save 3 seconds of video
 """
