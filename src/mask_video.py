@@ -75,8 +75,8 @@ def bumper_mask(input_video, video_name, fps=60, codec="MJPG"):
     cv2.destroyAllWindows()
     video.release()
 
-def left_mask(video_path, video_name, fps=60, codec="MJPG"):
-    cap = cv2.VideoCapture(video_path)
+def left_mask(input_video, video_name, fps=60, codec="MJPG"):
+    cap = cv2.VideoCapture(input_video)
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
@@ -99,7 +99,7 @@ def left_mask(video_path, video_name, fps=60, codec="MJPG"):
 
         # Replace the original frame with the mask
         frame_with_mask = frame.copy()
-        frame_with_mask[:, :width, :] = mask[:, :width, :]
+        frame_with_mask[:, :width // 2, :] = mask[:, :width // 2, :]
 
         video.write(frame_with_mask)
         cv2.imshow('LEFT video with mask', frame_with_mask)
@@ -110,8 +110,8 @@ def left_mask(video_path, video_name, fps=60, codec="MJPG"):
     cv2.destroyAllWindows()
     video.release()
 
-def right_mask(video_path, video_name, fps=60, codec="MJPG"):
-    cap = cv2.VideoCapture(video_path)
+def right_mask(input_video, video_name, fps=60, codec="MJPG"):
+    cap = cv2.VideoCapture(input_video)
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
@@ -134,7 +134,7 @@ def right_mask(video_path, video_name, fps=60, codec="MJPG"):
 
         # Replace the original frame with the mask
         frame_with_mask = frame.copy()
-        frame_with_mask[:, :width, :] = mask[:, :width, :]
+        frame_with_mask[:, -width // 2:, :] = mask[:, -width // 2:, :]
 
         video.write(frame_with_mask)
         cv2.imshow('RIGHT video with mask', frame_with_mask)
@@ -147,13 +147,13 @@ def right_mask(video_path, video_name, fps=60, codec="MJPG"):
 
 video_paths = ["video\TESLA_IST_ORIGINAL\TESLA_IST_ORIGINAL\\2023-04-29_16-40-01-back.mp4",
                "video\TESLA_IST_ORIGINAL\TESLA_IST_ORIGINAL\\2023-04-29_16-40-01-front.mp4",
-               "video\TESLA_IST_ORIGINAL\TESLA_IST_ORIGINAL\\2023-04-29_16-40-01-left.mp4",
-               "video\TESLA_IST_ORIGINAL\TESLA_IST_ORIGINAL\\2023-04-29_16-40-01-right.mp4"]
+               "video\TESLA_IST_ORIGINAL\TESLA_IST_ORIGINAL\\2023-04-29_16-40-01-left_repeater.mp4",
+               "video\TESLA_IST_ORIGINAL\TESLA_IST_ORIGINAL\\2023-04-29_16-40-01-right_repeater.mp4"]
 
-back_masked = bumper_mask(video_paths[0], "back_video_masked.avi")
+bumper_mask(video_paths[0], "back_video_masked.avi")
 # front_masked = front video does not need masking. 
-left_masked = left_mask(video_paths[2], "left_video_masked.avi")
-right_masked = right_mask(video_paths[3], "right_video_masked.avi")
+left_mask(video_paths[2], "left_video_masked.avi")
+right_mask(video_paths[3], "right_video_masked.avi")
 
 
 """
