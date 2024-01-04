@@ -70,57 +70,6 @@ def recalculate_1_homography_if_intersection(H,height, width, sift_points, index
         output_H= H
     return output_H
 
-def recalculate_homographies_if_intersection(H_output, height, width, sift_points, matches):    
-    # Iterate over each homography in H_output
-    for i in range(1, H_output.shape[1]):
-        
-        H = H_output[2:, i].reshape((3, 3)) # Extract the homography matrix H from the current column of H_output
-        index_frame_i = int(H_output[0, i] - 1) # Index of frame i in sift_points
-        index_frame_j = int(H_output[1, i] - 1) # Index of frame j in sift_points
-        
-        if (index_frame_i == 0 or index_frame_j == 0):
-            continue
-        
-        #Coordinates of the corners
-        transformed_corners = calculate_transformed_corners(H, width, height) # corners coordinates in destination frame (frame 8)
-        original_corners = find_original_coordinates(np.linalg.inv(H), transformed_corners) # corners coordinates in origin frame (frame 1)
-        
-        #Features of frames
-        features_frame_i = sift_points[index_frame_i]  # Features from frame 1 (origin)
-        features_frame_j = sift_points[index_frame_j]  # Features from frame 8 (destination)
-        
-        # Filter features inside the corners for frame 1 and frame i
-        #filtered_features_frame_i = filter_features_outside_corners(features_frame_i, original_corners)
-        #filtered_features_frame_j = filter_features_outside_corners(features_frame_j, transformed_corners)
-        
-        # Check if all points are on one side of the centerline horizontally or vertically
-        center_x, center_y = width // 2, height // 2
-        all_above = all(c[1] < center_y for c in transformed_corners)
-        all_below = all(c[1] > center_y for c in transformed_corners)
-        all_right = all(c[0] > center_x for c in transformed_corners)
-        all_left = all(c[0] < center_x for c in transformed_corners)
-        
-
-        # Recompute homography with filtered features
-        if not (all_above or all_below or all_right or all_left):
-            #src_pts = filtered_features_frame_i  # List of (x, y) tuples
-            #dst_pts = filtered_features_frame_j  # List of (x, y) tuples
-            src_pts = features_frame_i
-            dst_pts = features_frame_j
-            
-            src_pts_list_of_lists = [list(array) for array in src_pts]
-            dst_pts_list_of_lists = [list(array) for array in dst_pts]
-            if len(src_pts_list_of_lists) < 4 or len(dst_pts_list_of_lists) < 4: 
-                continue
-            # Now src_pts_list_of_lists and dst_pts_list_of_lists contain lists of lists
-            new_H, _ = RANSAC(src_pts_list_of_lists, dst_pts_list_of_lists, 72, 0.8)
-            
-            # Replace the old homography with the new one in H_output
-            H_output[2:, i] = new_H.reshape(9)
-            print("index_frame_i, index_frame_j", index_frame_i, index_frame_j)
-    
-    return H_output
-
 def calculate_transformed_corners(H, width, height):
     # Corners of the image in homogenous coordinates
     corners = np.array([
