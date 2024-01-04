@@ -9,7 +9,7 @@ def is_valid_cfg_file(filename):
 
 def check_syntax():
     if len(sys.argv) != 2:
-        print("Usage: python main.py <config_file>")
+        print("Usage: python <file.py> <config_file>")
         return 1
     if not os.path.exists(sys.argv[1]):
         print("File does not exist:", sys.argv[1])

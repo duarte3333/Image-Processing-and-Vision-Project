@@ -81,7 +81,7 @@ def create_sequential_homographies(matches, sift_points):
         
     return H_sequential
 
-def final_parsing(config_data):
+def final_parsing_process_video(config_data):
     video_path = config_data[0].split(' ')[1].strip() #Get the video path
     type_homography = config_data[4].split(' ')[3] #Get the type of homography
     file_name_keypoints = "outputs/" + config_data[3].split(' ')[1] #Get the name of the keypoints file
@@ -93,7 +93,7 @@ if __name__ == "__main__":
         sys.exit(1)
     config_data = parse_configuration_file(sys.argv[1]) #Parse the configuration file
     match_img1 , match_map = parse_points(config_data) #Parse the points from the configuration file
-    video_path, type_homography, file_name_keypoints, file_name_tranformations = final_parsing(config_data)
+    video_path, type_homography, file_name_keypoints, file_name_tranformations = final_parsing_process_video(config_data)
     
     sift_points, nr_points = extract_features(video_path)
     

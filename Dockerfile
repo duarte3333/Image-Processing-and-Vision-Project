@@ -11,6 +11,8 @@ COPY . /app
 # If you have a requirements file, uncomment the next line
 RUN apt update; apt install -y libgl1
 RUN pip install --upgrade pip
+#RUN apt-get update && apt-get upgrade -y
+RUN pip install --default-timeout=100 -r requirements.txt
 RUN pip install -r requirements.txt
 
 # Make port 80 available to the world outside this container
@@ -20,6 +22,6 @@ RUN pip install -r requirements.txt
 # ENV NAME World
 
 # Run app.py when the container launches
-CMD ["python3", "main.py", "config/part_1.cfg"]
+CMD ["python3", "process_video.py", "config/part_1.cfg", "&&", "python3", "compute_transform.py","config/part_1.cfg"]
 
 # sudo docker build -t my-python-app:3.10.12 .
