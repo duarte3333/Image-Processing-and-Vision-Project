@@ -48,8 +48,8 @@ def recalculate_1_homography_if_intersection(H,height, width, sift_points, index
     # Recompute homography with filtered features
     if not (all_above or all_below or all_right or all_left):
         #Features of frames
-        features_frame_i = np.transpose(sift_points[index_frame_src][2:,:])  # Features from frame 1 (origin)
-        features_frame_j = np.transpose(sift_points[index_frame_dst][2:,:]) # Features from frame 8 (destination)   
+        features_frame_i = np.transpose(sift_points[int(index_frame_src)][2:,:])  # Features from frame 1 (origin)
+        features_frame_j = np.transpose(sift_points[int(index_frame_dst)][2:,:]) # Features from frame 8 (destination)   
         
         matches= matching_direct_homography(features_frame_i,features_frame_j)
 

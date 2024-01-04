@@ -52,25 +52,25 @@ def homography_to_map(H_sequential, H_frame1_to_map,height, width, sift_points):
         For frame n, H_output[2:,i-1] should be the homography from frame n-1 to the map. 
         H_sequential[2:,i-1] should be the homography from frame n to n-1
         So T_to_Map should be the homography from frame n to map"""
-    H_output=np.empty([11,0])
+    H_toframe1=np.empty([11,0])
     H_frame_map=np.empty([11,0])
     H_i = np.vstack((np.array([[1],[2]] ), H_sequential[2:,0].reshape(9,1) )) 
-    H_output = H_output = np.hstack([H_output, H_i])
-    for i in range(1, H_sequential.shape[1]): #this should create H_output that translates from frame n to frame 1
-        T_to_1= np.matmul(H_output[2:,i-1].reshape(3,3), H_sequential[2:,i].reshape(3,3))  
+    H_toframe1 = np.hstack([H_toframe1, H_i])
+    for i in range(1, H_sequential.shape[1]): #this should create H_toframe1 that translates from frame n to frame 1
+        T_to_1= np.matmul(H_toframe1[2:,i-1].reshape(3,3), H_sequential[2:,i].reshape(3,3))  
                                                                              #frame 1 in sift points is frame index 0
-        T_to_1_direct=recalculate_1_homography_if_intersection(T_to_1,height, width, sift_points, index_frame_dst=0, index_frame_src=H_sequential[1,i]-1) #especificar matches e sif_points
+        T_to_1_direct=recalculate_1_homography_if_intersection(T_to_1,height, width, sift_points, index_frame_dst=0, index_frame_src=int(H_sequential[1,i])-1) #especificar matches e sif_points
         H_i = np.vstack((np.array([[1],[H_sequential[1,i]]] ), T_to_1_direct.reshape(9,1) )) #indices CHECK
-        H_output = np.hstack([H_output, H_i])
+        H_toframe1 = np.hstack([H_toframe1, H_i])
 
 
     H_0 = np.vstack((np.array([[0], [1]]) , H_frame1_to_map.reshape(9,1) )) #first part of the array is 0 and 1 - which means homography from frame 1 to map (frame 0)
     H_frame_map = np.hstack([H_frame_map,H_0])
-    for i in range(H_output.shape[1]): #translate homographjy from frame n to frame 1, into homography from frame n to frame 0(map)
-        T_0=np.matmul(H_frame1_to_map,H_output[2:,i].reshape(3,3) )
-        H_0 = np.vstack((np.array([[0], [ H_output[1,i] ]]) , T_0.reshape(9,1) ))
+    for i in range(H_toframe1.shape[1]): #translate homographjy from frame n to frame 1, into homography from frame n to frame 0(map)
+        T_0=np.matmul(H_frame1_to_map,H_toframe1[2:,i].reshape(3,3) )
+        H_0 = np.vstack((np.array([[0], [ H_toframe1[1,i] ]]) , T_0.reshape(9,1) ))
         H_frame_map=np.hstack([H_frame_map,H_0])
-    return H_frame_map
+    return H_frame_map, H_toframe1 
 
 def create_sequential_homographies(matches, sift_points):
     """ This function creates the homographies from frame n+1 to frame n.
@@ -100,7 +100,7 @@ def final_parsing_compute_transform(config_data):
     file_name_keypoints = "outputs/" + config_data[3].split(' ')[1] #Get the name of the keypoints file
     file_name_tranformations = "outputs/" + config_data[5].split(' ')[1] #Get the name of the transformations file
     width, height = config_data[6].split(' ')[1], config_data[6].split(' ')[2] #Get the width and height of the video
-    return video_path, type_homography, file_name_keypoints, file_name_tranformations, width, height
+    return video_path, type_homography, file_name_keypoints, file_name_tranformations, int(width), int(height)
     
 def extract_keypoints(file_path):
     data = loadmat(file_path)
@@ -130,7 +130,7 @@ if __name__ == "__main__":
     match = matching_features_SCIKITLEARN(sift_points)
     H_sequential = create_sequential_homographies(match, sift_points)
     if type_homography =='map':
-        H_output = homography_to_map(H_sequential, H_frame1_to_map,height, width, sift_points)
+        H_output, _ = homography_to_map(H_sequential, H_frame1_to_map,height, width, sift_points)
     elif type_homography =='all':
         H_output = all_homographies(H_sequential,height, width, sift_points)
     print('H_output', H_output)
