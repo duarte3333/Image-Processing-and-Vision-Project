@@ -9,14 +9,16 @@ import matplotlib.pyplot as plt
 import matplotlib.pyplot as plt
 import numpy as np
 
+"""
+Back Camera Intrinsics
 
-"""***Back Camera Intrinsics***
 Intrinsic matrix K(1,1) K(2,2) K(1,3) K(2,3)
 519.4039      518.0534      656.7379      451.5029
 Radial distortion coef k1 k2 k3
 -0.26584    0.067382  -0.0073529
 """
 
+#Used Functions
 def matching_features_SCIKITLEARN(sift_points):
     """Feature matching using nearest neighbours, for pairs of consecutive frames"""
 
@@ -127,6 +129,32 @@ def undistort_points(back_points_distorted):
     back_points_undistorted = cv2.undistortPoints(np.array(back_points_distorted),Back_CameraMatrix,Back_RadialDistortion)
 
     return back_points_undistorted, Back_CameraMatrix
+
+def frame_storek(camera_path,k):
+    cap = cv2.VideoCapture(camera_path)
+
+# Get the total number of frames in the video
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+# Check if there are at least 20 frames in the video
+    if total_frames < 20:
+        print("Error: The video has less than 20 frames.")
+        exit()
+
+# Set the frame number to 20
+    frame_number = k
+    cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number - 1)
+
+# Read the 20th frame
+    ret, frame_k = cap.read()
+
+# Check if the frame was read successfully
+    if not ret:
+     print("Error: Could not read frame.")
+     exit()
+    return frame_k
+
+
 
 if __name__ == "__main__":
 
