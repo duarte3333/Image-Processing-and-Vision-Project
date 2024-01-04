@@ -47,7 +47,7 @@ def bumper_mask(input_video, video_name, fps=30, codec="MJPG", runtime=None):
 
     # Calculate the center and axes of the ellipse
     center = (new_width // 2, new_height // 2)
-    axes = (new_width // 2, new_height // 2)
+    axes = (new_width // 2, new_height*3 // 8)
 
     start_time = time.time()
     while cap.isOpened():
@@ -154,7 +154,7 @@ video_paths = ["video\TESLA_IST_ORIGINAL\TESLA_IST_ORIGINAL\\2023-04-29_16-40-01
                "video\TESLA_IST_ORIGINAL\TESLA_IST_ORIGINAL\\2023-04-29_16-40-01-left_repeater.mp4",
                "video\TESLA_IST_ORIGINAL\TESLA_IST_ORIGINAL\\2023-04-29_16-40-01-right_repeater.mp4"]
 
-bumper_mask(video_paths[0], "video/back_video_masked.avi", runtime=5)
+bumper_mask(video_paths[0], "video/back_video_masked_01.avi", runtime=5)
 # front_masked = front video does not need masking. 
 left_mask(video_paths[2], "video/left_video_masked.avi", runtime=5)
 right_mask(video_paths[3], "video/right_video_masked.avi", runtime=5)
