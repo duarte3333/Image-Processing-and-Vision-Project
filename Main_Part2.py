@@ -14,6 +14,7 @@ Back Camera Intrinsics
 
 Intrinsic matrix K(1,1) K(2,2) K(1,3) K(2,3)
 519.4039      518.0534      656.7379      451.5029
+
 Radial distortion coef k1 k2 k3
 -0.26584    0.067382  -0.0073529
 """
@@ -156,57 +157,48 @@ def frame_storek(camera_path,k):
 
 
 if __name__ == "__main__":
-    
+
+    #Path for the back camera video masked and not masked
     back_camera_path = os.path.abspath('video/back_video_masked_01.avi')
     back_camera_path2 = os.path.abspath('video/2023-04-29_16-40-01-back.mp4')
 
+    #Display the masked video
     video_capture = cv2.VideoCapture(back_camera_path)
-    #Read until video is completed
-    
     while True:
-        # Read a frame from the video
         ret, frame = video_capture.read()
-
-        # Break the loop if the video has ended
         if not ret:
             cv2.waitKey(120)
             break
-            
-
-        # Display the frame
         cv2.imshow('Video', frame)
-
-        # Exit the loop if any key is pressed
         if cv2.waitKey(20) != -1:
             break
-
-    # Release the video capture object and close the OpenCV window
     video_capture.release()
     cv2.destroyAllWindows()
            
-
     for i in range(3):
         
+        #Feature Extraction and Matching
         both_cameras_sift = []
-        sift_back1, _ = extract_features(back_camera_path, 1000,i*10)  # Extracting only one frame from it
+        sift_back1, _ = extract_features(back_camera_path, 1000,i*10)  #Extracting only one frame from it
         sift_back2, _ = extract_features(back_camera_path, 1000,(i+1)*10) 
         both_cameras_sift.append(sift_back1)
         both_cameras_sift.append(sift_back2)
         matches = matching_features_SCIKITLEARN(both_cameras_sift)
 
-        #Select the points from the back camera and left camera that match
+        #Select the points from the back camera that match between the two frames
         back_points_distorted1, back_points_distorted2 = back_left_matches(matches, sift_back1,sift_back2)
 
-        #Undistort the previous points, and obtain their coordinates
+        #Undistort the previous points and obtain their coordinates
         back_points1, K_back = undistort_points(back_points_distorted1)
         back_points2, _ = undistort_points(back_points_distorted2)
 
-    #Obtain the Essential Matrix from the two Cameras
-        E, mask = cv2.findEssentialMat(back_points1, back_points2, method=cv2.RANSAC, threshold=0.9) #K_back, cv2.RANSAC, threshold=0.3)
+        #Obtain the Essential Matrix from the back camera in two different frames
+        E, mask = cv2.findEssentialMat(back_points1, back_points2, method=cv2.RANSAC, threshold=0.9) 
 
-    #Decompose the Essential Matrix to obtain the most likely Rotation and Translation
+        #Decompose the Essential Matrix to obtain the most likely Rotation and Translation of the back camera
         points, R, t, _ = cv2.recoverPose(E, back_points1, back_points2 )
 
+        #Plotting the 3D Translation vector and Rotation of the axis for the two given frames
         fig = plt.figure()
         ax = fig.add_subplot(2,2,1, projection='3d')
         x_axis = [1,0,0]
@@ -215,9 +207,7 @@ if __name__ == "__main__":
         x_axis=np.reshape(x_axis,(3,1))
         y_axis=np.reshape(y_axis,(3,1))
         z_axis=np.reshape(z_axis,(3,1))
-        #VECTOR 1
         ax.quiver(0, 0, 0, t[0], t[1], t[2], color='r', arrow_length_ratio=0.2)
-        #VECTOR 2
         ax.quiver(0, 0, 0, x_axis[0], x_axis[1], x_axis[2], color='y', arrow_length_ratio=0.2)
         ax.quiver(0, 0, 0, y_axis[0],y_axis[1], y_axis[2], color='y', arrow_length_ratio=0.2)
         ax.quiver(0, 0, 0, z_axis[0],z_axis[1], z_axis[2], color='y', arrow_length_ratio=0.2)
@@ -228,7 +218,6 @@ if __name__ == "__main__":
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
         ax.set_title('Translation Vector')
-
         x_axis = [1,0,0]
         y_axis = [0,1,0]
         z_axis = [0,0,1]
@@ -239,32 +228,24 @@ if __name__ == "__main__":
         x = R.dot(x_axis)
         y = R.dot(y_axis)
         z = R.dot(z_axis)
-        #VECTOR 1
         ax2.quiver(0, 0, 0, x[0], x[1], x[2], color='r', arrow_length_ratio=0.2)
         ax2.quiver(0, 0, 0, x_axis[0], x_axis[1], x_axis[2], color='y', arrow_length_ratio=0.2)
-        #VECTOR 2
         ax2.quiver(0, 0, 0, y[0], y[1], y[2], color='g', arrow_length_ratio=0.2)
         ax2.quiver(0, 0, 0, y_axis[0],y_axis[1], y_axis[2], color='y', arrow_length_ratio=0.2)
-        #VECTOR 3
         ax2.quiver(0, 0, 0, z[0], z[1], z[2], color='b', arrow_length_ratio=0.2)
         ax2.quiver(0, 0, 0, z_axis[0],z_axis[1], z_axis[2], color='y', arrow_length_ratio=0.2)
         ax2.set_xlim([-0.7, 0.7])
         ax2.set_ylim([-0.7, 0.7])
         ax2.set_zlim([-0.7, 0.7])
-
         ax2.set_xlabel('X')
         ax2.set_ylabel('Y')
         ax2.set_zlabel('Z')
         ax2.set_title('Rotation of the Axis')
-
-
         image1 = frame_storek(back_camera_path2,i*10)
         ax3 = fig.add_subplot(2, 2, 3)
         ax3.imshow(image1)
         ax3.axis('off')
         ax3.set_title('Frame '+str(i*10))
-
-    # Loading and plotting the second image
         image2 = frame_storek(back_camera_path2,(i+1)*10)
         ax4 = fig.add_subplot(2, 2, 4)
         ax4.imshow(image2)
