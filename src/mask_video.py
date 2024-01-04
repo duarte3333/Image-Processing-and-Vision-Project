@@ -154,10 +154,10 @@ video_paths = ["video\TESLA_IST_ORIGINAL\TESLA_IST_ORIGINAL\\2023-04-29_16-40-01
                "video\TESLA_IST_ORIGINAL\TESLA_IST_ORIGINAL\\2023-04-29_16-40-01-left_repeater.mp4",
                "video\TESLA_IST_ORIGINAL\TESLA_IST_ORIGINAL\\2023-04-29_16-40-01-right_repeater.mp4"]
 
-bumper_mask(video_paths[0], "back_video_masked.avi", runtime=5)
+bumper_mask(video_paths[0], "video/back_video_masked.avi", runtime=5)
 # front_masked = front video does not need masking. 
-left_mask(video_paths[2], "left_video_masked.avi", runtime=5)
-right_mask(video_paths[3], "right_video_masked.avi", runtime=5)
+left_mask(video_paths[2], "video/left_video_masked.avi", runtime=5)
+right_mask(video_paths[3], "video/right_video_masked.avi", runtime=5)
 
 """
 #  Example usage:
