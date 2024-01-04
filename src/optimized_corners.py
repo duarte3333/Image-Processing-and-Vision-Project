@@ -37,12 +37,11 @@ def recalculate_homographies_if_intersection(H_output, height, width, sift_point
         if not (all_above or all_below or all_right or all_left):
             src_pts = filtered_features_frame_i  # List of (x, y) tuples
             dst_pts = filtered_features_frame_j  # List of (x, y) tuples
-            print("src_pts", len(src_pts))
-            print("dst_pts", len(dst_pts))
             
             src_pts_list_of_lists = [list(array) for array in src_pts]
             dst_pts_list_of_lists = [list(array) for array in dst_pts]
-            print("src_pts_list_of_lists", (src_pts_list_of_lists))
+            if len(src_pts_list_of_lists) < 4 or len(dst_pts_list_of_lists) < 4:
+                continue
             # Now src_pts_list_of_lists and dst_pts_list_of_lists contain lists of lists
             new_H, _ = RANSAC(src_pts_list_of_lists, dst_pts_list_of_lists, 72, 0.8)
             
@@ -63,7 +62,7 @@ def calculate_transformed_corners(H, width, height):
     # Apply the homography to the corners
     transformed_corners = H @ corners #this 
     transformed_corners /= transformed_corners[2] # Normalize the points
-    print("coners", transformed_corners[:2].T)
+    #print("coners", transformed_corners[:2].T)
     return transformed_corners[:2].T
 
 def find_original_coordinates(H_inv, transformed_corners):    
