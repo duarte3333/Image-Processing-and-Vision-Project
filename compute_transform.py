@@ -13,6 +13,8 @@ from src.display_video import *
 from src.view_homography import *
 from src.outputs import *
 from src.optimized_corners import *
+from scipy.io import loadmat
+
 
 # OVERVIEW:
 #   Feature detection: opencv
@@ -89,6 +91,19 @@ def final_parsing(config_data):
     width, height = config_data[6].split(' ')[1], config_data[6].split(' ')[2] #Get the width and height of the video
     return video_path, type_homography, file_name_keypoints, file_name_tranformations, width, height
     
+def extract_keypoints(file_path):
+    data = loadmat(file_path)
+    keypoint_data = data['Keypoints']
+    kp_list = []
+    nr_points = None
+
+    for item in keypoint_data:
+        points = item.reshape((item.shape[1],item.shape[0])) # Transpose to revert the reshape operation
+        kp_list.append(points)
+        # Store the number of points (assuming all arrays have the same size)
+        nr_points = points.shape[1] if nr_points is None else nr_points
+    return kp_list, nr_points
+
 if __name__ == "__main__":
     if (check_syntax()):
         sys.exit(1)
@@ -97,7 +112,8 @@ if __name__ == "__main__":
     video_path, type_homography, file_name_keypoints, file_name_tranformations, width, height = final_parsing(config_data)
     
     H_frame1_to_map =compute_homography(match_img1, match_map)    
-    sift_points, nr_points = extract_features(video_path)
+    #sift_points, nr_points = extract_features(video_path)
+    sift_points, nr_points = extract_keypoints(file_name_keypoints)
     print("width, height", width, height)
     match = matching_features_SCIKITLEARN(sift_points)
     H_sequential = create_sequential_homographies(match, sift_points)
@@ -108,6 +124,6 @@ if __name__ == "__main__":
     H_output = recalculate_homographies_if_intersection(H_output, int(height), int(width), sift_points, match)
     #print('H_output', H_output)
     
-    create_output_keypoints(sift_points, file_name_keypoints, nr_points)
+    #create_output_keypoints(sift_points, file_name_keypoints, nr_points)
     create_output(H_output, file_name_tranformations)        
     
