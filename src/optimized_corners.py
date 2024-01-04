@@ -8,9 +8,10 @@ from sklearn.neighbors import NearestNeighbors
 
 def matching_direct_homography(features_frame_i,features_frame_j):
     Threshold=0.75
-    nbrs = NearestNeighbors(n_neighbors=2, algorithm='auto').fit(features_frame_i) 
-    distances, indices = nbrs.kneighbors(features_frame_j)     
+    nbrs = NearestNeighbors(n_neighbors=2, algorithm='auto').fit(features_frame_j) 
+    distances, indices = nbrs.kneighbors(features_frame_i)     
     features_matches=np.empty([4,0])
+
     for i in range(len(distances)): 
         if distances[i,0]< Threshold*distances[i,1]:
             #match is good for first neighbour found
@@ -48,6 +49,7 @@ def recalculate_1_homography_if_intersection(H,height, width, sift_points, index
     # Recompute homography with filtered features
     if not (all_above or all_below or all_right or all_left):
         #Features of frames
+        print('Entered cycle, indexes:', index_frame_src,index_frame_dst )
         features_frame_i = np.transpose(sift_points[int(index_frame_src)][2:,:])  # Features from frame 1 (origin)
         features_frame_j = np.transpose(sift_points[int(index_frame_dst)][2:,:]) # Features from frame 8 (destination)   
         
@@ -55,7 +57,6 @@ def recalculate_1_homography_if_intersection(H,height, width, sift_points, index
 
         kp_dst = sift_points[index_frame_dst][:2,:] #keyupoints for frame n (destination)
         kp_src= sift_points[index_frame_src][:2,:] #keypoints for frame n+1 (origin)
-
 
         src_pts = [] #[[x1,y1, d1, ..., dn], [x1,y1, d1, ..., dn], ...]
         dst_pts = []

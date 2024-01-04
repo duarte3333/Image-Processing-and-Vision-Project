@@ -18,7 +18,7 @@ def compute_homography(src, dst):
     _, _, Vt = np.linalg.svd(A, full_matrices=True)
     x = Vt[-1]
     if (x[0] < 0.0001 and x[0] > -0.0001):
-        x[0] = 10^(-10)
+        x[0] += 10^(-8)
     H = x.reshape(3, -1) / x[0]
     return H
 

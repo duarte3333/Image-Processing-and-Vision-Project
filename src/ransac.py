@@ -20,7 +20,7 @@ def RANSAC(src,dst,iter,threshold):
             for p, q in zip(src, dst): #zip -> iterate through two lists at the same time
                   x1, y1, x2, y2 = p[0], p[1], q[0], q[1]
                   transformed_point = np.dot(H, np.array([x1, y1, 1])) # Transform the point using the estimated homography
-                  if transformed_point[2] > -0.00001 and transformed_point[2] < 0.00001: 
+                  if transformed_point[2] > -10^(-9) and transformed_point[2] < 10^(-9):
                         transformed_point[2] += 10^(-10)
                   transformed_point /= transformed_point[2] # Normalize the transformed point
                 
